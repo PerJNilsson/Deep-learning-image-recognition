@@ -22,9 +22,11 @@ from matplotlib import pyplot as plt
 
 # Preprocess training input data
 # We only have a depth of 1 (RBG = 3). Need to specify this
-X_train = X_train.reshape(X_train.shape[0], 1, 28 ,28)
-X__test = X_test.reshape(X_test.shape[0], 1, 28, 28)
-print (X_train.shape)
+X_train = X_train.reshape(X_train.shape[0], 1, 28, 28)
+X_test = X_test.reshape(X_test.shape[0], 1, 28, 28)
+
+
+#print (X_test.shape)
 
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
@@ -36,7 +38,12 @@ X_test /= 255
 # # array with the class values. The fix:
 Y_train = np_utils.to_categorical(y_train, 10)
 Y_test = np_utils.to_categorical(y_test, 10)
-print (Y_train.shape)
+
+# If one wanna do faster computations, just to test the network
+#Y_train = Y_train[:10000]
+#X_train = X_train[:10000]
+#print (Y_train.shape)
+
 
 # Declare sequential model
 model = Sequential()
@@ -47,8 +54,26 @@ model.add(Convolution2D(32, 3, 3, activation='relu', input_shape=(1,28,28),
                         dim_ordering='th'))
 
 # Add second layer
-model.add(Convolution2D(32,3,3, activation='relu'))
+model.add(Convolution2D(32, 3, 3, activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))  # MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
+model.add(Dropout(0.25))
+
+# Add third layer
+model.add(Convolution2D(32, 3, 3, activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))  # MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
+model.add(Dropout(0.25))
+
+# # Add forth layer
+model.add(Convolution2D(32, 3, 3, activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))  # MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
+model.add(Dropout(0.25))
+#
+# Add fifth layer
+model.add(Convolution2D(32, 1, 1, activation='relu'))
+model.add(Dropout(0.25))
+
+# # Add sixth layer
+model.add(Convolution2D(32, 1, 1, activation='relu'))
 model.add(Dropout(0.25))
 
 # Add fully connected layer
@@ -64,7 +89,11 @@ model.compile(loss='categorical_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
+# Change verbose to see progress
 
-model.fit(X_train, Y_train, batch_size=32, nb_epoch=10, verbose=1)
+model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1)
 
-#score = model.evaluate(X_test, Y_test, verbose=0)
+score = model.evaluate(X_test, Y_test, verbose=0)
+
+
+print ('Percentage of images recognized: %s' %score[1])
