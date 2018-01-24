@@ -53,28 +53,12 @@ model = Sequential()
 model.add(Convolution2D(32, 3, 3, activation='relu', input_shape=(1,28,28),
                         dim_ordering='th'))
 
-# Add second layer
-model.add(Convolution2D(32, 3, 3, activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))  # MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
-model.add(Dropout(0.25))
 
-# Add third layer
-model.add(Convolution2D(32, 3, 3, activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))  # MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
-model.add(Dropout(0.25))
-
-# # Add forth layer
-model.add(Convolution2D(32, 3, 3, activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))  # MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
-model.add(Dropout(0.25))
-#
-# Add fifth layer
-model.add(Convolution2D(32, 1, 1, activation='relu'))
-model.add(Dropout(0.25))
-
-# # Add sixth layer
-model.add(Convolution2D(32, 1, 1, activation='relu'))
-model.add(Dropout(0.25))
+model.add(Convolution2D(32, 3, 3, activation='tanh')) # Add second layer
+model.add(Convolution2D(32, 3, 3, activation='tanh')) # Add third layer
+model.add(Convolution2D(32, 3, 3, activation='relu')) # # Add forth  layer
+model.add(MaxPooling2D(pool_size=(2,2)))  # 5th: MaxPooling2D is a way to reduce the number of parameters in our model by sliding a 2x2 pooling filter across the previous layer and taking the max of the 4 values in the 2x2 filter.
+model.add(Dropout(0.25)) # Dropout consists in randomly setting a fraction rate of input units to 0 at each update during training time, which helps prevent overfitting.
 
 # Add fully connected layer
 model.add(Flatten())  # Making the eights from convL 1-dim
@@ -93,7 +77,7 @@ model.compile(loss='categorical_crossentropy',
 
 model.fit(X_train, Y_train, batch_size=32, epochs=10, verbose=1)
 
-score = model.evaluate(X_test, Y_test, verbose=0)
+score = model.evaluate(X_test, Y_test, verbose=1)
 
 
 print ('Percentage of images recognized: %s' %score[1])
