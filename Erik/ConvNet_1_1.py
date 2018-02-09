@@ -4,8 +4,28 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 from keras.optimizers import SGD
 from keras import backend as K
+from skimage import transform
+import numpy as np
 
+IMG_SIZE = 48
+NUM_CLASSES = 43
+
+# Preprocessing with only crop and standard size
 def pre_process(img):
+    # Central square crop
+    min_side = min(img.shape[:-1])
+    centre = img.shape[0] // 2, img.shape[1] // 2
+    img = img[centre[0] - min_side // 2: centre[0] + min_side // 2,
+          centre[1] - min_side // 2: centre[1] + min_side // 2,
+          :]
+
+    # Rescale to standard size
+    img = transform.resize(img, (IMG_SIZE, IMG_SIZE))
+
+    # Roll color axis to 0
+    img = np.rollaxis(img, -1)
+
+    return img
 
 def conv_net():
     model = Sequential()
