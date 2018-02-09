@@ -1,0 +1,4 @@
+Ideas for improvment.
+    - Use regularzation eg L2
+    - More pre processing
+    
