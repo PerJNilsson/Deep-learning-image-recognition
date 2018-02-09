@@ -5,6 +5,8 @@ from keras.layers.pooling import MaxPooling2D
 from keras.optimizers import SGD
 from keras import backend as K
 
+def pre_process(img):
+
 def conv_net():
     model = Sequential()
     model.add(Conv2D(32, (3, 3), padding='same',
