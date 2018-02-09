@@ -1,0 +1,14 @@
+*** ConvNet_1_x ***
+The aim of ConvNet_1_x is to only use commands, whose purpose I understand at the present.
+The network contains 6 convolutional layers with 3 max pooling + dropout layers in between.
+Followed by a Flatten layer, dense layer, dropout layer and lastly a dense layer(NUM_CLASSES, activation='softmax')
+All layers, except the last one are Relu
+
+*ConvNet_1_1*
+Dropout(between conv layers) = 0.2
+MaxPooling(between conv layers) = pool_size=(2, 2)
+Dropout(before output layer) = 0.5
+
+Preprocessing:
+Only crop = equal to shortest side
+Resize = 48x48

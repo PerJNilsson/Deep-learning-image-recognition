@@ -115,6 +115,4 @@ model.fit(X, Y,
           epochs=epochs,
           validation_split=0.2,
           callbacks=[LearningRateScheduler(lr_schedule),
-                     ModelCheckpoint('Trained_models/model1_1.h5', save_best_only=True)])
-
-
+                     ModelCheckpoint('Trained_models/ConvNet_1_1.h5', save_best_only=True)])
