@@ -7,7 +7,7 @@ from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.pooling import MaxPooling2D
 from keras.models import Sequential
 from keras.optimizers import SGD
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint, CSVLogger
 from keras import backend as K
 from skimage import transform, io
 
@@ -93,6 +93,8 @@ def import_training_imgs(path):
 
 # Main program
 training_path = 'path_to_training_set'
+name = 'ConvNet_1_1' # Update name accordingly
+
 # Parameters for training
 lr = 0.01
 batch_size = 32
@@ -109,10 +111,14 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 X, Y = import_training_imgs(training_path)
+# Callbacks definitions
+lr_scheduler = LearningRateScheduler(lr_schedule)
+model_checkpoint = ModelCheckpoint(os.path.join('Trained_models', name + '.h5'), save_best_only=True)
+csv_logger = CSVLogger(os.path.join('Logs', name + '.csv'), separator=';')
+
 # training
 model.fit(X, Y,
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2,
-          callbacks=[LearningRateScheduler(lr_schedule),
-                     ModelCheckpoint('Trained_models/ConvNet_1_1.h5', save_best_only=True)])
+          callbacks=[lr_scheduler, model_checkpoint, csv_logger])
