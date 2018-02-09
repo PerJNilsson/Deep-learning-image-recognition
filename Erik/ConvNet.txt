@@ -4,6 +4,9 @@ The network contains 6 convolutional layers with 3 max pooling + dropout layers 
 Followed by a Flatten layer, dense layer, dropout layer and lastly a dense layer(NUM_CLASSES, activation='softmax')
 All layers, except the last one are Relu
 
+In ConvNet_1_x a few hyperparameters will be varied in order to identify optimal choices with regard to accuracy.
+If possible varying degrees of preprocessing will also be applied with the same end goal.
+
 *ConvNet_1_1*
 Dropout(between conv layers) = 0.2
 MaxPooling(between conv layers) = pool_size=(2, 2)
