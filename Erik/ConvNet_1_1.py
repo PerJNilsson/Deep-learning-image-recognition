@@ -6,6 +6,7 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.pooling import MaxPooling2D
 from keras.models import Sequential
+from keras.optimizers import SGD
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras import backend as K
 from skimage import transform, io
@@ -66,6 +67,7 @@ def conv_net():
     return model
 
 
+# Governs decay of learning rate.
 def lr_schedule(epoch):
     return lr * (0.1 ** int(epoch / 10))
 
@@ -96,8 +98,15 @@ lr = 0.01
 batch_size = 32
 epochs = 30
 
-K.set_image_data_format('channel_first')
+K.set_image_data_format('channels_first')
 model = conv_net()
+
+# Let's train the model using SGD + momentum
+
+sgd = SGD(lr=lr)
+model.compile(loss='categorical_crossentropy',
+              optimizer=sgd,
+              metrics=['accuracy'])
 
 X, Y = import_training_imgs(training_path)
 # training
