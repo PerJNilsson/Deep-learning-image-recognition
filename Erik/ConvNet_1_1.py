@@ -91,7 +91,7 @@ def import_training_imgs(path):
     return x, y
 
 
-# Main program
+### Main program ###
 training_path = 'Data/Final_Training/Images' # make sure this is the path to training set
 name = 'ConvNet_1_1' # Update name accordingly
 
@@ -103,14 +103,14 @@ epochs = 30
 K.set_image_data_format('channels_first')
 model = conv_net()
 
-# Let's train the model using SGD + momentum
 
-sgd = SGD(lr=lr)
+sgd = SGD(lr=lr) # Momentum and decay not active as is. Could be changed later to improve performance
 model.compile(loss='categorical_crossentropy',
               optimizer=sgd,
               metrics=['accuracy'])
 
 X, Y = import_training_imgs(training_path)
+
 # Callbacks definitions
 lr_scheduler = LearningRateScheduler(lr_schedule)
 model_checkpoint = ModelCheckpoint(os.path.join('Trained_models', name + '.h5'), save_best_only=True)
