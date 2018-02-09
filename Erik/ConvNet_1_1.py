@@ -16,7 +16,7 @@ NUM_CLASSES = 43
 
 
 # Preprocessing with only crop and standard size
-def preprocess_img(img):
+def basic_preprocess(img):
     # Central square crop
     min_side = min(img.shape[:-1])
     centre = img.shape[0] // 2, img.shape[1] // 2
@@ -81,7 +81,7 @@ def import_training_imgs(path):
     np.random.shuffle(all_img_paths)
 
     for img_path in all_img_paths:
-        img = preprocess_img(io.imread(img_path))
+        img = basic_preprocess(io.imread(img_path))
         label = get_class(img_path)
         imgs.append(img)
         labels.append(label)
@@ -92,7 +92,7 @@ def import_training_imgs(path):
 
 
 # Main program
-training_path = 'path_to_training_set'
+training_path = 'Data/Final_Training/Images' # make sure this is the path to training set
 name = 'ConvNet_1_1' # Update name accordingly
 
 # Parameters for training
