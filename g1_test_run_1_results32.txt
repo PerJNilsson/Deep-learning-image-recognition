@@ -1,0 +1,130 @@
+Test feb 9
+Batch Size: Run 1 - 10, Run 2 - 20, Run 3 - 5
+Learn rate: 0.01
+Validation data = Test data
+Fully connected layer = 1000 - 500 - 43
+Pool size = (2,2), Pool stride = (2,2)
+Filter stride = (1,1)
+Image size = (32,32,3)
+Channels = 16, 32, 64, 128
+Case 1: C(5)P C(5)P 
+Case 2: C(5)P (FC layer only 500 - 43)
+Case 3: C^2(5)P C^2(5)P
+Case 4: C^2(5)P C^2(3)P
+Case 5: C^2(3)P C^2(3)P
+Case 6: C^2(5)P C^2(5)
+Case 7: C^2(4)P C^2(4)
+Case 8: C^2(3)P C^2(3)
+
+======================================
+============= TEST RUN 1 =============
+======================================
+
+======== Test case 1 ========
+ 	Test loss: 0.45899542969425144
+	Test accuracy:0.9288994457546152
+ 
+======== Test case 2 ========
+ 	Test loss: 0.4310826141862103
+	Test accuracy:0.9143309579986669
+ 
+======== Test case 3 ========
+ 	Test loss: 0.325701218953626
+	Test accuracy:0.9479018210798431
+ 
+======== Test case 4 ========
+ 	Test loss: 0.2564567167908063
+	Test accuracy:0.9589865400313576
+ 
+======== Test case 5 ========
+ 	Test loss: 0.34737669895900825
+	Test accuracy:0.9406967537514482
+ 
+======== Test case 6 ========
+ 	Test loss: 0.3516833201580204
+	Test accuracy:0.9376880443860686
+ 
+======== Test case 7 ========
+ 	Test loss: 0.39747880437733607
+	Test accuracy:0.9278701504260325
+ 
+======== Test case 8 ========
+ 	Test loss: 0.33756560066440944
+	Test accuracy:0.9391132225050213
+ 
+======================================
+============= TEST RUN 2 =============
+======================================
+
+======== Test case 1 ========
+ 	Test loss: 0.4791141451177905
+	Test accuracy:0.9245447347773886
+ 
+======== Test case 2 ========
+ 	Test loss: 0.5540793144032772
+	Test accuracy:0.8828186856596034
+ 
+======== Test case 3 ========
+ 	Test loss: 0.3770593942533102
+	Test accuracy:0.9288994457546152
+ 
+======== Test case 4 ========
+ 	Test loss: 0.39055501699760287
+	Test accuracy:0.9365795724937487
+ 
+======== Test case 5 ========
+ 	Test loss: 0.686907743161761
+	Test accuracy:0.8702296120253991
+ 
+======== Test case 6 ========
+ 	Test loss: 0.43213279179503117
+	Test accuracy:0.9247030879048629
+ 
+======== Test case 7 ========
+ 	Test loss: 0.48325577743044706
+	Test accuracy:0.913380839262137
+ 
+======== Test case 8 ========
+ 	Test loss: 0.6260921603391686
+	Test accuracy:0.8933491686083265
+ 
+======================================
+============= TEST RUN 3 =============
+======================================
+
+======== Test case 1 ========
+ 	Test loss: 0.3433630650712624
+	Test accuracy:0.9391132224767055
+ 
+======== Test case 2 ========
+ 	Test loss: 0.39084328358501835
+	Test accuracy:0.9090261282565947
+ 
+======== Test case 3 ========
+ 	Test loss: 0.28830461271847996
+	Test accuracy:0.9500395883290614
+ 
+======== Test case 4 ========
+ 	Test loss: 0.2290421281567471
+	Test accuracy:0.9589073634393047
+ 
+======== Test case 5 ========
+ 	Test loss: 0.2954703775181705
+	Test accuracy:0.9498812351732715
+ 
+======== Test case 6 ========
+ 	Test loss: 0.27906010747488175
+	Test accuracy:0.952573238340334
+ 
+======== Test case 7 ========
+ 	Test loss: 0.31213943175777337
+	Test accuracy:0.9484560570260031
+ 
+======== Test case 8 ========
+ 	Test loss: 0.24084780601572955
+	Test accuracy:0.9550277118161852
+ 
+======================================
+======= TEST ENDED SUCCESSFULLY ======
+======================================
+
