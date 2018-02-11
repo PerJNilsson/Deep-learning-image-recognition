@@ -1,0 +1,3 @@
+CCPCCP>>CPCP
+larger filter at early layers is preferable
+Batch size < 20 gives better results.
