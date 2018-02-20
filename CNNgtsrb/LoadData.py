@@ -14,7 +14,7 @@ def readTrafficSigns(rootpath, crop, size, colormode):
     images = [] # images
     labels = [] # corresponding labels
     image_array = []
-    for c in range(0,43):
+    for c in range(0, 43):
         prefix = rootpath + '/' + format(c, '05d') + '/'  # subdirectory for class
         gtFile = open(prefix + 'GT-'+ format(c, '05d') + '.csv')  # annotations file
         gtReader = csv.reader(gtFile, delimiter=';') # csv parser for annotations file
@@ -43,7 +43,7 @@ def readTrafficSigns(rootpath, crop, size, colormode):
     return images, labels, image_array, hist_labels
 
 
-def manipulateImages(image_array, labels, size):
+def manipulateImages(image_array, labels, size, list_to_few):
     half_size = int(size/2)
     n_images = len(labels)
     d_image_array = []
@@ -56,32 +56,52 @@ def manipulateImages(image_array, labels, size):
     for nIt in range(0, n_images):
         tmp_im1 = image_array[nIt]
         tmp_im2 = copy.copy(tmp_im1)
-        tmp_label = labels[nIt]
-        for k in range(0, half_size):
-            for l in range(0, half_size):
-                tmp_im1[k][l] = [0, 0, 0]  # Set pixel to black
-        d_image_array.append(tmp_im1)
-        d_labels.append(tmp_label)
-        for i in range(half_size, size):
-            for j in range(half_size, size):
-                tmp_im2[i][j] = [0, 0, 0]  # Set pixel to black
-        d_image_array.append(tmp_im2)
-        d_labels.append(tmp_label)
+        tmp_label = int(labels[nIt])
+        if tmp_label in list_to_few:
+            tmp_im3 = copy.copy(tmp_im1)
+            tmp_im4 = copy.copy(tmp_im1)
+            for k in range(0, half_size):
+                for l in range(half_size, size):
+                    tmp_im1[k][l] = [0, 0, 0]  # Set pixel to black
+            d_image_array.append(tmp_im1)
+            d_labels.append(tmp_label)
+            for i in range(half_size, size):
+                for j in range(0, half_size):
+                    tmp_im2[i][j] = [0, 0, 0]  # Set pixel to black
+            d_image_array.append(tmp_im2)
+            d_labels.append(tmp_label)
+            for k in range(0, half_size):
+                for l in range(0, half_size):
+                    tmp_im3[k][l] = [0, 0, 0]  # Set pixel to black
+            d_image_array.append(tmp_im3)
+            d_labels.append(tmp_label)
+            for i in range(half_size, size):
+                for j in range(half_size, size):
+                    tmp_im4[i][j] = [0, 0, 0]  # Set pixel to black
+            d_image_array.append(tmp_im4)
+            d_labels.append(tmp_label)
+        else:
+            for k in range(0, half_size):
+                for l in range(0, half_size):
+                    tmp_im1[k][l] = [0, 0, 0]  # Set pixel to black
+            d_image_array.append(tmp_im1)
+            d_labels.append(tmp_label)
+            for i in range(half_size, size):
+                for j in range(half_size, size):
+                    tmp_im2[i][j] = [0, 0, 0]  # Set pixel to black
+            d_image_array.append(tmp_im2)
+            d_labels.append(tmp_label)
     return d_image_array, d_labels
 
-def smoothDistribution(image_array, labels, size, minImages):
-    half_size = int(size/2)
-    n_images = len(labels)
-    d_image_array = []
-    d_labels = []
-    toFew = []
-    for nIt in range(0,43):
+def smoothDistribution(labels, min_images):
+    list_to_few = []
+    for nIt in range(0, 43):
         class_obj = str(nIt)
         indices = [i for i, x in enumerate(labels) if x == class_obj]
-        if len(indices) < 1500:
+        if len(indices) < min_images:
             print('Need to make more data on class', nIt)
-            toFew.append(nIt)
-
+            list_to_few.append(nIt)
+    return list_to_few
 
 def readTrafficTestSigns(rootpath, crop, size):
     images = [] # images
@@ -156,11 +176,14 @@ images, labels, image_array, hist_labels = readTrafficSigns(rootpath, crop, size
 # plt.imshow(image_array[0])
 # plt.show()
 # print(len(labels))
-
-image_array, labels = manipulateImages(image_array, labels, size)
+min_images = 1000
+list_to_few = smoothDistribution(labels, min_images)
+print(list_to_few)
 getHistogram(labels)
-maxImages = 1000
-smoothDistribution(image_array, labels, size, maxImages)
+image_array, labels = manipulateImages(image_array, labels, size, list_to_few)
+getHistogram(labels)
+
+
 
 #s_images, s_labels, s_image_array = shuffle(images, labels, image_array)
 
