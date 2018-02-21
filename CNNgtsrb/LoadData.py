@@ -11,11 +11,12 @@ import random
 
 
 
+
 def readTrafficSigns(rootpath, crop, size, colormode):
     images = [] # images
     labels = [] # corresponding labels
     image_array = []
-    for c in range(0, 43):
+    for c in range(0, 3):
         prefix = rootpath + '/' + format(c, '05d') + '/'  # subdirectory for class
         gtFile = open(prefix + 'GT-'+ format(c, '05d') + '.csv')  # annotations file
         gtReader = csv.reader(gtFile, delimiter=';') # csv parser for annotations file
@@ -177,9 +178,8 @@ def shuffle(images, labels, image_array):
         s_images.append(images[number])
         s_labels.append(labels[number])
         s_image_array.append(image_array[number])
-    s_image_array = np.array(s_image_array).astype(np.dtype(float))
-    s_image_array /= 255
     s_labels = np.array(s_labels)
+    s_image_array = np.array(s_image_array).astype(np.dtype(float))
     print('Shuffle = Done')
     return s_images, s_labels, s_image_array
 
@@ -200,12 +200,10 @@ colormode = 'RGB' # string: RGB, P -palette mode(only uses a small number of col
 rootpath = './GTSRB/Final_Training/Images'
 test_rootpath = './GTSRB/Final_Test/Images'
 images, labels, image_array, hist_labels = readTrafficSigns(rootpath, crop, size, colormode)
-#test_images, test_labels, test_image_array, test_hist_labels = readTrafficTestSigns(test_rootpath, crop, size)
+test_images, test_labels, test_image_array, test_hist_labels = readTrafficTestSigns(test_rootpath, crop, size)
 
 
-# plt.imshow(image_array[0])
-# plt.show()
-# print(len(labels))
+
 min_images = 1000
 max_images = 1400
 list_to_few, list_to_many = smoothDistribution(labels, min_images, max_images)
@@ -213,19 +211,80 @@ getHistogram(labels)
 image_array, labels = manipulateImages(image_array, labels, size, list_to_few, list_to_many)
 getHistogram(labels)
 
+plt.imshow(image_array[444])
+plt.show()
+
+s_images, s_labels, s_image_array = shuffle(images, labels, image_array)
+
+s_labels = np.array(s_labels)
+s_labels = np_utils.to_categorical(s_labels, 43) # Makes binary class-matrix
+
+plt.imshow(s_image_array[444])
+plt.show()
+
+########## STARING TEST KERAS CODE ##################
+
+input_dim = (size, size, 3)
+import keras
+from keras.models import Sequential
+from keras.layers.core import Dense, Dropout, Activation, Flatten
+from keras.layers.convolutional import Conv2D
+from keras.layers.pooling import MaxPooling2D
+from keras.utils import np_utils
+from keras.layers.normalization import BatchNormalization
+
+model = Sequential()
+
+model.add(Conv2D(16, 5, 5, activation='relu', input_shape=input_dim))
+model.add(BatchNormalization(axis=1))
+model.add(Conv2D(32, 5, 5, activation='relu'))
+model.add(BatchNormalization(axis=1))
+
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2, 2)))
+
+model.add(Conv2D(64, 3, 3, activation='relu'))
+model.add(BatchNormalization(axis=1))
+model.add(Conv2D(64, 3, 3, activation='relu'))
+model.add(BatchNormalization(axis=1))
+
+model.add(MaxPooling2D(pool_size=(2,2), strides=(2, 2)))
+model.add(Conv2D(128, 3, 3, activation='relu'))
+model.add(BatchNormalization(axis=1))
+
+# Add fully connected layer
+model.add(Flatten())  # Making the eights from convL 1-dim
+model.add(Dense(1000, activation='relu'))
+model.add(Dropout(0.3))
+
+model.add(Dense(500, activation='relu'))
+model.add(BatchNormalization(axis=1))
+# Add output layer
+model.add(Dropout(0.3))
+
+model.add(Dense(43, activation='softmax'))
+model.add(Dropout(0.25))
+
+# Defining things..
+model.compile(loss='categorical_crossentropy',
+              optimizer='adam',
+              metrics=['categorical_accuracy'])
+
+# Change verbose to see progress
+
+history = model.fit(s_image_array, s_labels, batch_size=20, epochs=1, verbose=1, validation_split=0.25)
+
+score = model.evaluate(test_image_array, test_labels, verbose=1)
 
 
-#s_images, s_labels, s_image_array = shuffle(images, labels, image_array)
+print('Percentage of images recognized: %s' %score[1])
+print('Energy function: %s' %score[0])
 
-# labels = np.array(labels)
-# labels = np_utils.to_categorical(labels, 43) # Makes binary class-matrix
-
-#divideImages(images, hist_labels)
-#plt.imshow(image_array[0])
-#plt.show()
-#getHistogram(hist_labels)
-#s_image_array = s_image_array.reshape(s_image_array.shape[0], 32, 32, 3)
-
-
+plt.plot(history.history['categorical_accuracy'])
+plt.plot(history.history['val_categorical_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
 
 print('###################################################DONE#############################################')
