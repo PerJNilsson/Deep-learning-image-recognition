@@ -7,7 +7,7 @@ from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.pooling import MaxPooling2D
 from keras.models import Sequential
 from keras.optimizers import SGD
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint, CSVLogger
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint, CSVLogger, EarlyStopping
 from keras import backend as K
 from skimage import transform, io
 
@@ -115,10 +115,11 @@ X, Y = import_training_imgs(training_path)
 lr_scheduler = LearningRateScheduler(lr_schedule)
 model_checkpoint = ModelCheckpoint(os.path.join('Trained_models', name + '.h5'), save_best_only=True)
 csv_logger = CSVLogger(os.path.join('Logs', name + '.csv'), separator=';')
+early_stoppping = EarlyStopping(monitor='val_loss', min_delta=0, patience=0, verbose=0, mode='auto')
 
 # training
 model.fit(X, Y,
           batch_size=batch_size,
           epochs=epochs,
           validation_split=0.2,
-          callbacks=[lr_scheduler, model_checkpoint, csv_logger])
+          callbacks=[lr_scheduler, model_checkpoint, csv_logger, early_stoppping])
