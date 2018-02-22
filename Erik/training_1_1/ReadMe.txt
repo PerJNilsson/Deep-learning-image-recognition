@@ -1,3 +1,8 @@
+Training one tests the effect of  the h, s and v channels from the HSV representation of rgb-images.
+
+The GTSRB training set must be placed at 'Data/Final_Training/Images' relative to the location of the files or change
+the training_path variable in main1.py to the correct destination.
+
 case1 - only basic preprocessing. crop and rescale to standard size
 case2 - added histogram normalization in the v channel
 case3 - histogram norm in h channel

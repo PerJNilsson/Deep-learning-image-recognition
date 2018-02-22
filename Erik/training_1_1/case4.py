@@ -1,6 +1,7 @@
 from helper_func import conv_net, training, basic_preprocess, import_training_imgs
 from helper_func import norm_s
 from keras.optimizers import SGD
+import numpy as np
 
 NUM_CLASSES = 43
 lr = 0.01
@@ -9,10 +10,11 @@ case_name = 'case4'
 def preprocess(img):
     img = basic_preprocess(img)
     img = norm_s(img)
+    # Roll color axis to 0
+    img = np.rollaxis(img, -1)
     return img
 
-def case1(training_path, training_name):
-    name = 'case1'
+def case4(training_path, training_name):
     model = conv_net()
     sgd = SGD(lr=lr)  # Momentum and decay not active as is. Could be changed later to improve performance
     model.compile(loss='categorical_crossentropy',

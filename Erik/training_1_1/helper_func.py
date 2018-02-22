@@ -26,8 +26,6 @@ def basic_preprocess(img):
     # Rescale to standard size
     img = transform.resize(img, (IMG_SIZE, IMG_SIZE))
 
-    # Roll color axis to 0
-    img = np.rollaxis(img, -1)
 
     return img
 
