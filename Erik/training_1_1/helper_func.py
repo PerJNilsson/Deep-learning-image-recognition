@@ -6,13 +6,13 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.pooling import MaxPooling2D
 from keras.models import Sequential
-from keras.optimizers import SGD
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint, CSVLogger, EarlyStopping
-from keras import backend as K
-from skimage import transform, io
+from skimage import transform, io, exposure, color
 
 IMG_SIZE = 48
 NUM_CLASSES = 43
+batch_size = 32
+epochs = 30
 
 # Preprocessing with only crop and standard size
 def basic_preprocess(img):
@@ -30,6 +30,44 @@ def basic_preprocess(img):
     img = np.rollaxis(img, -1)
 
     return img
+
+# Histogram normalization in the v channel
+def norm_v(img):
+    hsv = color.rgb2hsv(img)
+    hsv[:, :, 2] = exposure.equalize_hist(hsv[:, :, 2])
+    img = color.hsv2rgb(hsv)
+    return img
+
+# Histogram normalization in the h channel
+def norm_v(img):
+    hsv = color.rgb2hsv(img)
+    hsv[:, :, 0] = exposure.equalize_hist(hsv[:, :, 0])
+    img = color.hsv2rgb(hsv)
+    return img
+
+# Histogram normalization in the s channel
+def norm_v(img):
+    hsv = color.rgb2hsv(img)
+    hsv[:, :, 1] = exposure.equalize_hist(hsv[:, :, 1])
+    img = color.hsv2rgb(hsv)
+    return img
+
+def import_training_imgs(path, preprocess):
+    imgs = []
+    labels = []
+
+    all_img_paths = glob.glob(os.path.join(path, '*/*.ppm'))
+    np.random.shuffle(all_img_paths)
+
+    for img_path in all_img_paths:
+        img = preprocess(io.imread(img_path))
+        label = get_class(img_path)
+        imgs.append(img)
+        labels.append(label)
+
+    x = np.array(imgs, dtype='float32')
+    y = np.eye(NUM_CLASSES, dtype='uint8')[labels]
+    return x, y
 
 # Returns the class by splitting the path - folder identifies class.
 def get_class(img_path):
@@ -70,11 +108,11 @@ def lr_schedule(epoch):
     return lr * (0.1 ** int(epoch / 10))
 
 # training
-def training():
+def training(model, X, Y, training_name, case_name):
     lr_scheduler = LearningRateScheduler(lr_schedule)
-    model_checkpoint = ModelCheckpoint(os.path.join('Trained_models/' + TRAINING_NAME, name + '.h5'),
+    model_checkpoint = ModelCheckpoint(os.path.join('Trained_models/' + training_name, case_name + '.h5'),
                                        save_best_only=True)
-    csv_logger = CSVLogger(os.path.join('Logs/' + TRAINING_NAME, name + '.csv'), separator=';')
+    csv_logger = CSVLogger(os.path.join('Logs/' + training_name, case_name + '.csv'), separator=';')
     early_stoppping = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=0, mode='auto')
     callbacks = [lr_scheduler, model_checkpoint, csv_logger, early_stoppping]
 
