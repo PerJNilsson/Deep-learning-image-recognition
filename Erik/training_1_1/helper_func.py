@@ -39,14 +39,14 @@ def norm_v(img):
     return img
 
 # Histogram normalization in the h channel
-def norm_v(img):
+def norm_h(img):
     hsv = color.rgb2hsv(img)
     hsv[:, :, 0] = exposure.equalize_hist(hsv[:, :, 0])
     img = color.hsv2rgb(hsv)
     return img
 
 # Histogram normalization in the s channel
-def norm_v(img):
+def norm_s(img):
     hsv = color.rgb2hsv(img)
     hsv[:, :, 1] = exposure.equalize_hist(hsv[:, :, 1])
     img = color.hsv2rgb(hsv)

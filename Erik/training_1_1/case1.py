@@ -1,4 +1,4 @@
-from helper_func import conv_net, training, lr_schedule, get_class, basic_preprocess, import_training_imgs
+from helper_func import conv_net, training, basic_preprocess, import_training_imgs
 from keras.optimizers import SGD
 
 NUM_CLASSES = 43
