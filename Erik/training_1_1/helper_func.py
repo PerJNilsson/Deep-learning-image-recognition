@@ -14,7 +14,6 @@ from skimage import transform, io
 IMG_SIZE = 48
 NUM_CLASSES = 43
 
-
 # Preprocessing with only crop and standard size
 def basic_preprocess(img):
     # Central square crop
@@ -32,11 +31,9 @@ def basic_preprocess(img):
 
     return img
 
-
 # Returns the class by splitting the path - folder identifies class.
 def get_class(img_path):
     return int(img_path.split('/')[-2])
-
 
 # Function that defines the structure of the network
 def conv_net():
@@ -69,57 +66,20 @@ def conv_net():
 
 # Governs decay of learning rate.
 def lr_schedule(epoch):
+    lr = 0.01
     return lr * (0.1 ** int(epoch / 10))
 
-
-# Imports and shuffles the images. Will only work with the path to the GTSRB Training directory.
-def import_training_imgs(path):
-    imgs = []
-    labels = []
-
-    all_img_paths = glob.glob(os.path.join(path, '*/*.ppm'))
-    np.random.shuffle(all_img_paths)
-
-    for img_path in all_img_paths:
-        img = basic_preprocess(io.imread(img_path))
-        label = get_class(img_path)
-        imgs.append(img)
-        labels.append(label)
-
-    x = np.array(imgs, dtype='float32')
-    y = np.eye(NUM_CLASSES, dtype='uint8')[labels]
-    return x, y
-
-
-### Main program ###
-training_path = 'Data/Final_Training/Images' # make sure this is the path to training set
-name = 'ConvNet_1_1' # Update name accordingly
-
-# Parameters for training
-lr = 0.01
-batch_size = 32
-epochs = 30
-
-K.set_image_data_format('channels_first')
-model = conv_net()
-
-
-sgd = SGD(lr=lr) # Momentum and decay not active as is. Could be changed later to improve performance
-model.compile(loss='categorical_crossentropy',
-              optimizer=sgd,
-              metrics=['accuracy'])
-
-X, Y = import_training_imgs(training_path)
-
-# Callbacks definitions
-lr_scheduler = LearningRateScheduler(lr_schedule)
-model_checkpoint = ModelCheckpoint(os.path.join('Trained_models', name + '.h5'), save_best_only=True)
-csv_logger = CSVLogger(os.path.join('Logs', name + '.csv'), separator=';')
-early_stoppping = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=0, mode='auto')
-
 # training
-model.fit(X, Y,
-          batch_size=batch_size,
-          epochs=epochs,
-          validation_split=0.2,
-          callbacks=[lr_scheduler, model_checkpoint, csv_logger, early_stoppping])
+def training():
+    lr_scheduler = LearningRateScheduler(lr_schedule)
+    model_checkpoint = ModelCheckpoint(os.path.join('Trained_models/' + TRAINING_NAME, name + '.h5'),
+                                       save_best_only=True)
+    csv_logger = CSVLogger(os.path.join('Logs/' + TRAINING_NAME, name + '.csv'), separator=';')
+    early_stoppping = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=0, mode='auto')
+    callbacks = [lr_scheduler, model_checkpoint, csv_logger, early_stoppping]
+
+    model.fit(X, Y,
+              batch_size=batch_size,
+              epochs=epochs,
+              validation_split=0.2,
+              callbacks=callbacks)
