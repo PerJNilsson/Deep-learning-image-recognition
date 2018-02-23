@@ -17,7 +17,7 @@ def preprocess(img):
 
 def case6(training_path, training_name):
     model = conv_net()
-    sgd = SGD(lr=lr)  # Momentum and decay not active as is. Could be changed later to improve performance
+    sgd = SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(loss='categorical_crossentropy',
                       optimizer=sgd,
                       metrics=['accuracy'])

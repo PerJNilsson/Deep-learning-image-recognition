@@ -7,12 +7,14 @@ from keras.layers.core import Dense, Dropout, Flatten
 from keras.layers.pooling import MaxPooling2D
 from keras.models import Sequential
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint, CSVLogger, EarlyStopping
+from keras.optimizers import SGD
 from skimage import transform, io, exposure, color
 
 IMG_SIZE = 48
 NUM_CLASSES = 43
 batch_size = 32
 epochs = 30
+lr = 0.01
 
 # Preprocessing with only crop and standard size
 def basic_preprocess(img):
@@ -102,8 +104,10 @@ def conv_net():
 
 # Governs decay of learning rate.
 def lr_schedule(epoch):
-    lr = 0.01
     return lr * (0.1 ** int(epoch / 10))
+
+def optimizer():
+    return SGD(lr=lr, decay=1e-6, momentum=0.9, nesterov=True)
 
 # training
 def training(model, X, Y, training_name, case_name):
