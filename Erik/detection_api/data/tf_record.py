@@ -2,18 +2,21 @@
 
 import tensorflow as tf
 import pandas as pd
+import numpy as np
 from tensorflow.models.research.object_detection.utils import dataset_util
+from PIL import Image
 
 flags = tf.app.flags
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
 FLAGS = flags.FLAGS
 
-def create_tf_example(label_and_data_info):
-    # TODO START: Populate encoded_image_data variable with appropriate type
+def create_tf_entry(label_and_data_info):
+
     height = 900 # Image height
     width = 1360 # Image width
     filename = label_and_data_info[0] # Filename of the image. Empty if image is not from file
-    encoded_image_data = None # Encoded image bytes
+    img = np.array(Image.open('GTSDB/' + filename.decode()))
+    encoded_image_data = img.tostring() # Encoded image bytes
     image_format = b'png' # b'jpeg' or b'png'
 
     xmins = label_and_data_info[1] # List of normalized left x coordinates in bounding box (1 per box)
@@ -44,8 +47,7 @@ def create_tf_example(label_and_data_info):
 
 writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
 
-# TODO START: Write code to read in your dataset to examples variable
-file_loc = 'FullIJCNN2013/gt.txt'
+file_loc = 'GTSDB/gt.txt'
 raw_data = pd.read_csv(file_loc, sep=';', header=None, names = ['filename', 'xmin', 'ymin', 'xmax', 'ymax', 'ClassID'])
 
 i = 0
@@ -56,14 +58,14 @@ for filename in raw_data['filename']:
         if i != 0:
             all_data_and_label_info.append(temp_data)
 
-        temp_data = ([filename, [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
-                   [str(raw_data['ClassID'][i])], [raw_data['ClassID'][i] + 1]])
+        temp_data = ([str.encode(filename), [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
+                   [str.encode(str(raw_data['ClassID'][i]))], [raw_data['ClassID'][i] + 1]])
     else:
         temp_data[1].append(raw_data['xmin'][i])
         temp_data[2].append(raw_data['xmax'][i])
         temp_data[3].append(raw_data['ymin'][i])
         temp_data[4].append(raw_data['ymax'][i])
-        temp_data[5].append(str(raw_data['ClassID'][i]))
+        temp_data[5].append(str.encode(str(raw_data['ClassID'][i])))
         temp_data[6].append(raw_data['ClassID'][i] + 1)
 
     prev_file = filename
@@ -71,17 +73,8 @@ for filename in raw_data['filename']:
 
 all_data_and_label_info.append(temp_data)
 
+for data_and_label_info in all_data_and_label_info:
+    tf_entry = create_tf_entry(data_and_label_info)
+    writer.write(tf_entry.SerializeToString())
 
-# TODO END
-
-
-
-
-'''for data_and_label_info in all_data_and_label_info:
-    tf_example = create_tf_example(data_and_label_info)
-    writer.write(tf_example.SerializeToString())
-
-writer.close()'''
-
-'''if __name__ == '__main__':
-    tf.app.run()'''
+writer.close()
