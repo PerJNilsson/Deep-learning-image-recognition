@@ -12,7 +12,7 @@ FLAGS = flags.FLAGS
 
 def create_tf_entry(label_and_data_info):
 
-    height = 900 # Image height
+    height = 800 # Image height
     width = 1360 # Image width
     filename = label_and_data_info[0] # Filename of the image. Empty if image is not from file
     img = np.array(Image.open('GTSDB/' + filename.decode()))
@@ -73,8 +73,12 @@ for filename in raw_data['filename']:
 
 all_data_and_label_info.append(temp_data)
 
+i = 0
 for data_and_label_info in all_data_and_label_info:
     tf_entry = create_tf_entry(data_and_label_info)
     writer.write(tf_entry.SerializeToString())
+    i = i +1
+    if i % 20 == 0:
+        print(str(i) + ' images saved as TF entries.')
 
 writer.close()
