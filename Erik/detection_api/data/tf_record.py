@@ -2,6 +2,7 @@
 
 import tensorflow as tf
 import pandas as pd
+import io
 import numpy as np
 from tensorflow.models.research.object_detection.utils import dataset_util
 from PIL import Image
@@ -15,19 +16,23 @@ def create_tf_entry(label_and_data_info):
     height = 800 # Image height
     width = 1360 # Image width
     filename = label_and_data_info[0] # Filename of the image. Empty if image is not from file
-    img = np.array(Image.open('GTSDB/' + filename.decode()))
-    encoded_image_data = img.tostring() # Encoded image bytes
+    img = Image.open('GTSDB/' + filename.decode())
+
+    b = io.BytesIO()
+    img.save(b, 'PNG')
+
+    encoded_image_data = b.getvalue() # Encoded image bytes
     image_format = b'png' # b'jpeg' or b'png'
 
-    xmins = label_and_data_info[1] # List of normalized left x coordinates in bounding box (1 per box)
-    xmaxs = label_and_data_info[2] # List of normalized right x coordinates in bounding box
+    xmins = [x/width for x in label_and_data_info[1]] # List of normalized left x coordinates in bounding box (1 per box)
+    xmaxs = [x/width for x in label_and_data_info[2]] # List of normalized right x coordinates in bounding box
              # (1 per box)
-    ymins = label_and_data_info[3] # List of normalized top y coordinates in bounding box (1 per box)
-    ymaxs = label_and_data_info[4] # List of normalized bottom y coordinates in bounding box
+    ymins = [y/height for y in label_and_data_info[3]] # List of normalized top y coordinates in bounding box (1 per box)
+    ymaxs = [y/height for y in label_and_data_info[4]] # List of normalized bottom y coordinates in bounding box
              # (1 per box)
     classes_text = label_and_data_info[5] # List of string class name of bounding box (1 per box)
     classes = label_and_data_info[6] # List of integer class id of bounding box (1 per box)
-    # TODO END
+
     tf_label_and_data = tf.train.Example(features=tf.train.Features(feature={
       'image/height': dataset_util.int64_feature(height),
       'image/width': dataset_util.int64_feature(width),
