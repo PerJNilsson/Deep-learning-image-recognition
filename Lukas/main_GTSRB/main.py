@@ -2,11 +2,13 @@ from __future__ import print_function
 
 import numpy as np
 
-from Testcase_GTSRB import testcase1
-from Testcase_GTSRB import testcaseLukas
+from readData import readData
+from readData import readValidationData
+from readData import oneHotEncode
 from keras.models import load_model
 from keras.utils import plot_model
-
+import testcaseLukas
+import testcase1
 # NOTES: split training into validation data also. Shuffle each training session. (Is constant throughout the epochs)
 # Look at validation accuracy instead of test accuracy
 # - add drop out
