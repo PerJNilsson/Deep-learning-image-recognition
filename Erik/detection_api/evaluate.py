@@ -4,11 +4,14 @@
 import tensorflow as tf
 import numpy as np
 from PIL import Image, ImageDraw
+import os, glob
+
 
 
 class GTSDBClassifier(object):
     def __init__(self):
-        PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/frozen_inference_graph_coco.pb'
+        #PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/frozen_inference_graph_coco.pb'
+        PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/frozen_inference_graph.pb'
         self.detection_graph = tf.Graph()
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()
@@ -40,24 +43,22 @@ def paint_box(results):
     width, height = image.size
     for i in range(len(results[0])):
         xy = [results[0][i][0][1]*width, results[0][i][0][0]*height, results[0][i][0][3]*width, results[0][i][0][2]*height]
-        print(xy)
-
         draw = ImageDraw.Draw(image)
         draw.rectangle(xy, outline='red')
-    image.show()
+    image.save('/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/' + results[1])
 
 PATH = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/GTSDB/'
 SCORE_THRESHOLD = 0.5
 obj1 = GTSDBClassifier()
-imgs_name = ['00001.png', '00002.png', '00011.png', '00018.png', ]
+all_imgs_paths = glob.glob(os.path.join(PATH, '*.png'))
+
+
 all_res = []
-all_all_res = []
 all_imgs = []
 
-for name in imgs_name:
-    img = Image.open(PATH + name)
+for path in all_imgs_paths:
+    img = Image.open(path)
     res = obj1.get_classification(img)
-    all_all_res.append([res, name])
     tmp = []
     for i in range(0, len(res[1][0])):
         if res[1][0][i] > SCORE_THRESHOLD:
@@ -65,7 +66,9 @@ for name in imgs_name:
 
         else:
             break
-    all_res.append([tmp, name])
+    if len(tmp) > 0:
+        head, tail = os.path.split(path)
+        all_res.append([tmp, tail])
 
 
 for res in all_res:
