@@ -1,9 +1,9 @@
 from __future__ import print_function
 
 import numpy as np
-from main_GTSRB.readData import readData
-from main_GTSRB.readData import readValidationData
-from main_GTSRB.readData import oneHotEncode
+from main_GTSRB_Lukas.readData import readData
+from main_GTSRB_Lukas.readData import readValidationData
+from main_GTSRB_Lukas.readData import oneHotEncode
 
 from Testcase_GTSRB import testcase1
 from Testcase_GTSRB import testcaseLukas
