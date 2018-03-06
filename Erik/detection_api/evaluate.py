@@ -1,6 +1,5 @@
 # Script to evaluate the output of a trained network on GTSDB
 
-# Only copied from Medium blogpost
 import tensorflow as tf
 import numpy as np
 from PIL import Image, ImageDraw
@@ -10,8 +9,8 @@ import os, glob
 
 class GTSDBClassifier(object):
     def __init__(self):
-        #PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/frozen_inference_graph_coco.pb'
-        PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/frozen_inference_graph.pb'
+        PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/frozen_inference_graph_coco.pb'
+        #PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/frozen_inference_graph.pb'
         self.detection_graph = tf.Graph()
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()
@@ -48,7 +47,7 @@ def paint_box(results):
     image.save('/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/' + results[1])
 
 PATH = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/GTSDB/'
-SCORE_THRESHOLD = 0.5
+SCORE_THRESHOLD = 0.7
 obj1 = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH, '*.png'))
 
@@ -56,7 +55,7 @@ all_imgs_paths = glob.glob(os.path.join(PATH, '*.png'))
 all_res = []
 all_imgs = []
 
-for path in all_imgs_paths:
+for path in all_imgs_paths[0:5]:
     img = Image.open(path)
     res = obj1.get_classification(img)
     tmp = []
