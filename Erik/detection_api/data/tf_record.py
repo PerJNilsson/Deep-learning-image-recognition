@@ -1,4 +1,5 @@
-# Run this script using the terminal command  python tf_record.py --output_path training.record
+# Variables written in caps must be configured
+# Omitting images without any traffic signes specified in gt.csv
 
 import tensorflow as tf
 import pandas as pd
@@ -7,16 +8,12 @@ import numpy as np
 from tensorflow.models.research.object_detection.utils import dataset_util
 from PIL import Image
 
-flags = tf.app.flags
-flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-FLAGS = flags.FLAGS
-
 def create_tf_entry(label_and_data_info):
 
     height = 800 # Image height
     width = 1360 # Image width
     filename = label_and_data_info[0] # Filename of the image. Empty if image is not from file
-    img = Image.open('GTSDB/' + filename.decode())
+    img = Image.open(IMAGE_FOLDER + filename.decode())
 
     b = io.BytesIO()
     img.save(b, 'PNG')
@@ -49,11 +46,14 @@ def create_tf_entry(label_and_data_info):
     }))
     return tf_label_and_data
 
+IMAGE_FOLDER = 'TestGTSDB/' # change here
+GT_LOCATION = 'TestGTSDB/gt.txt' # here
+OUTPUT_PATH = 'TestGTSDB.record' # and here.
 
-writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
+writer = tf.python_io.TFRecordWriter(OUTPUT_PATH)
 
-file_loc = 'GTSDB/gt.txt'
-raw_data = pd.read_csv(file_loc, sep=';', header=None, names = ['filename', 'xmin', 'ymin', 'xmax', 'ymax', 'ClassID'])
+
+raw_data = pd.read_csv(GT_LOCATION, sep=';', header=None, names = ['filename', 'xmin', 'ymin', 'xmax', 'ymax', 'ClassID'])
 
 i = 0
 prev_file = ''
@@ -86,4 +86,5 @@ for data_and_label_info in all_data_and_label_info:
     if i % 20 == 0:
         print(str(i) + ' images saved as TF entries.')
 
+print('Number of images in TFRecord: ' + str(i))
 writer.close()
