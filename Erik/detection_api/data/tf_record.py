@@ -46,9 +46,9 @@ def create_tf_entry(label_and_data_info):
     }))
     return tf_label_and_data
 
-IMAGE_FOLDER = 'TestGTSDB/' # change here
-GT_LOCATION = 'TestGTSDB/gt.txt' # here
-OUTPUT_PATH = 'TestGTSDB.record' # and here.
+IMAGE_FOLDER = 'TrainGTSDB/' # change here
+GT_LOCATION = 'TrainGTSDB/gt.txt' # here
+OUTPUT_PATH = 'TrainGTSDB.record' # and here.
 
 writer = tf.python_io.TFRecordWriter(OUTPUT_PATH)
 
