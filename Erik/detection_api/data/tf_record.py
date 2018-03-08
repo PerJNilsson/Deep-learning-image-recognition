@@ -64,13 +64,13 @@ for filename in raw_data['filename']:
             all_data_and_label_info.append(temp_data)
 
         temp_data = ([str.encode(filename), [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
-                   [str.encode(str(raw_data['ClassID'][i]))], [raw_data['ClassID'][i] + 1]])
+                   [str.encode(str(raw_data['ClassID'][i] + 1))], [raw_data['ClassID'][i] + 1]])
     else:
         temp_data[1].append(raw_data['xmin'][i])
         temp_data[2].append(raw_data['xmax'][i])
         temp_data[3].append(raw_data['ymin'][i])
         temp_data[4].append(raw_data['ymax'][i])
-        temp_data[5].append(str.encode(str(raw_data['ClassID'][i])))
+        temp_data[5].append(str.encode(str(raw_data['ClassID'][i] + 1)))
         temp_data[6].append(raw_data['ClassID'][i] + 1)
 
     prev_file = filename
