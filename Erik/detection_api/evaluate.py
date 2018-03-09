@@ -39,21 +39,21 @@ class GTSDBClassifier(object):
 def paint_box(results):
     image = Image.open(PATH_TO_DATA + results[1])
     width, height = image.size
-    fnt = ImageFont.truetype("Library/Fonts/Arial.ttf", size=20)
+    fnt = ImageFont.truetype('/Library/Fonts/Arial Bold.ttf', size=12)
     for i in range(len(results[0])):
         xy = [results[0][i][0][1]*width, results[0][i][0][0]*height, results[0][i][0][3]*width, results[0][i][0][2]*height]
         draw = ImageDraw.Draw(image)
         draw.rectangle(xy, outline='red')
-        draw.text((xy[0], xy[1]), str(int(results[0][i][2])), fill='DeepPink', font=fnt )
+        draw.text((xy[0], xy[1]), str(int(results[0][i][2]))+ ' ' + ('%.2f' % results[0][i][1]), fill='orange', font=fnt )
     image.save(PATH_TO_SAVE + results[1])
 
-PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2/frozen_inference_graph.pb'
+PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2/frozen_inference_graph-16000.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
-PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/180307_2/'
+PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/180307_2-16000/'
 SCORE_THRESHOLD = 0.2
 obj1 = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
-
+np.random.shuffle(all_imgs_paths)
 
 all_res = []
 all_imgs = []
