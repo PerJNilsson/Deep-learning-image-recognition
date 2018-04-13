@@ -1,4 +1,5 @@
-# Run this script using the terminal command  python tf_record.py --output_path training.record
+# Variables written in caps must be configured
+# Omitting images without any traffic signes specified in gt.csv
 
 import tensorflow as tf
 import pandas as pd
@@ -7,16 +8,12 @@ import numpy as np
 from tensorflow.models.research.object_detection.utils import dataset_util
 from PIL import Image
 
-flags = tf.app.flags
-flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-FLAGS = flags.FLAGS
-
 def create_tf_entry(label_and_data_info):
 
     height = 800 # Image height
     width = 1360 # Image width
     filename = label_and_data_info[0] # Filename of the image. Empty if image is not from file
-    img = Image.open('GTSDB/' + filename.decode())
+    img = Image.open(IMAGE_FOLDER + filename.decode())
 
     b = io.BytesIO()
     img.save(b, 'PNG')
@@ -49,11 +46,14 @@ def create_tf_entry(label_and_data_info):
     }))
     return tf_label_and_data
 
+IMAGE_FOLDER = 'TrainGTSDB/' # change here
+GT_LOCATION = 'TrainGTSDB/gt.txt' # here
+OUTPUT_PATH = 'TrainGTSDB.record' # and here.
 
-writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
+writer = tf.python_io.TFRecordWriter(OUTPUT_PATH)
 
-file_loc = 'GTSDB/gt.txt'
-raw_data = pd.read_csv(file_loc, sep=';', header=None, names = ['filename', 'xmin', 'ymin', 'xmax', 'ymax', 'ClassID'])
+
+raw_data = pd.read_csv(GT_LOCATION, sep=';', header=None, names = ['filename', 'xmin', 'ymin', 'xmax', 'ymax', 'ClassID'])
 
 i = 0
 prev_file = ''
@@ -64,13 +64,13 @@ for filename in raw_data['filename']:
             all_data_and_label_info.append(temp_data)
 
         temp_data = ([str.encode(filename), [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
-                   [str.encode(str(raw_data['ClassID'][i]))], [raw_data['ClassID'][i] + 1]])
+                   [str.encode(str(raw_data['ClassID'][i] + 1))], [raw_data['ClassID'][i] + 1]])
     else:
         temp_data[1].append(raw_data['xmin'][i])
         temp_data[2].append(raw_data['xmax'][i])
         temp_data[3].append(raw_data['ymin'][i])
         temp_data[4].append(raw_data['ymax'][i])
-        temp_data[5].append(str.encode(str(raw_data['ClassID'][i])))
+        temp_data[5].append(str.encode(str(raw_data['ClassID'][i] + 1)))
         temp_data[6].append(raw_data['ClassID'][i] + 1)
 
     prev_file = filename
@@ -86,4 +86,5 @@ for data_and_label_info in all_data_and_label_info:
     if i % 20 == 0:
         print(str(i) + ' images saved as TF entries.')
 
+print('Number of images in TFRecord: ' + str(i))
 writer.close()
