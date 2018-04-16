@@ -5,6 +5,7 @@ import tensorflow as tf
 import numpy as np
 import os, glob
 from PIL import Image
+import csv
 
 
 class GTSDBClassifier(object):
@@ -38,14 +39,16 @@ class GTSDBClassifier(object):
 
 
 
-def GTSRBClassifier(bbox, img):
+def GTSRBClassifier(bbox, img, filename, iteration):
     # function that will crop image and classify
     width, height = img.size
-    cropp_tuple = (bbox[0]*width, bbox[1]*height, bbox[2]*width, bbox[3]*height)
-    cropped_img = img.crop(cropp_tuple)
-    cropped_img.save(PATH_TO_SAVE + 'x.png')
+    crop_tuple = (bbox[1]*width, bbox[0]*height, bbox[3]*width, bbox[2]*height)
+    cropped_img = img.crop(crop_tuple)
+    root, ext = os.path.splitext(filename)
+    cropped_img.save(PATH_TO_SAVE + root + '-' + str(iteration) + ext)
+    #TODO - Implement classification using GTSRB algorithm
     sign_class = 1
-    return sign_class
+    return sign_class, crop_tuple
 
 
 PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-80000/frozen_inference_graph.pb'
@@ -55,12 +58,20 @@ SCORE_THRESHOLD = 0.5
 
 classifier = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
+all_imgs_paths.sort()
+all_res = []
 
-for path in all_imgs_paths[0:2]:
+for path in all_imgs_paths[0:10]:
     img = Image.open(path)
     result = classifier.get_classification(img)
-
     for i in range(0, len(result[1][0])):
         if result[1][0][i] > SCORE_THRESHOLD:
+            print(result[1][0][i])
+            head, filename = os.path.split(path)
+            sign_class, crop_tuple = GTSRBClassifier(result[0][0][i], img, filename, i)
+            all_res.append([filename, crop_tuple[0], crop_tuple[1], crop_tuple[2], crop_tuple[3], sign_class ])
 
-            sign_class = GTSRBClassifier(result[0][0][i], img)
+res_file = open(PATH_TO_SAVE + 'result.csv', 'w')
+with res_file:
+    writer = csv.writer(res_file, delimiter=';')
+    writer.writerows(all_res)
