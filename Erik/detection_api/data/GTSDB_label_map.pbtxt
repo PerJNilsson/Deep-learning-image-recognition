@@ -1,33 +1,33 @@
 item {
   id: 1
-  name: '1'
+  name: 'speed limit 20'
 }
 
 item {
   id: 2
-  name: '2'
+  name: 'speed limit 30'
 }
 item {
   id: 3
-  name: '3'
+  name: 'speed limit 50'
 }
 
 item {
   id: 4
-  name: '4'
+  name: 'speed limit 60'
 }
 item {
   id: 5
-  name: '5'
+  name: 'speed limit 70'
 }
 
 item {
   id: 6
-  name: '6'
+  name: 'speed limit 80'
 }
 item {
   id: 7
-  name: '7'
+  name: 'restriction ends 80'
 }
 
 item {

@@ -3,7 +3,7 @@
 
 import tensorflow as tf
 import pandas as pd
-import io
+import io, glob, os
 import numpy as np
 from tensorflow.models.research.object_detection.utils import dataset_util
 from PIL import Image
@@ -46,37 +46,52 @@ def create_tf_entry(label_and_data_info):
     }))
     return tf_label_and_data
 
-IMAGE_FOLDER = 'TrainGTSDB/' # change here
-GT_LOCATION = 'TrainGTSDB/gt.txt' # here
-OUTPUT_PATH = 'TrainGTSDB.record' # and here.
+IMAGE_FOLDER = 'TestGTSDB/' # change here
+GT_LOCATION = 'TestGTSDB/gt.txt' # here
+OUTPUT_PATH = 'TestGTSDB_all.record' # and here.
 
 writer = tf.python_io.TFRecordWriter(OUTPUT_PATH)
 
 
 raw_data = pd.read_csv(GT_LOCATION, sep=';', header=None, names = ['filename', 'xmin', 'ymin', 'xmax', 'ymax', 'ClassID'])
+all_files = glob.glob(os.path.join(IMAGE_FOLDER, '*.png'))
+all_files.sort()
+tmp_file_list = []
+for path in all_files:
+   head, tail = os.path.split(path)
+   tmp_file_list.append(tail)
+
+all_files = tmp_file_list
+
+all_data_and_label_info = []
+raw_data_file = raw_data['filename'].tolist()
+for name in all_files:
+    if name not in raw_data_file:
+        tmp_data = ([str.encode(name), [], [], [], [], [], [] ])
+        all_data_and_label_info.append(tmp_data)
 
 i = 0
 prev_file = ''
-all_data_and_label_info = []
 for filename in raw_data['filename']:
     if filename != prev_file:
         if i != 0:
-            all_data_and_label_info.append(temp_data)
+            all_data_and_label_info.append(tmp_data)
 
-        temp_data = ([str.encode(filename), [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
+        tmp_data = ([str.encode(filename), [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
                    [str.encode(str(raw_data['ClassID'][i] + 1))], [raw_data['ClassID'][i] + 1]])
     else:
-        temp_data[1].append(raw_data['xmin'][i])
-        temp_data[2].append(raw_data['xmax'][i])
-        temp_data[3].append(raw_data['ymin'][i])
-        temp_data[4].append(raw_data['ymax'][i])
-        temp_data[5].append(str.encode(str(raw_data['ClassID'][i] + 1)))
-        temp_data[6].append(raw_data['ClassID'][i] + 1)
+        tmp_data[1].append(raw_data['xmin'][i])
+        tmp_data[2].append(raw_data['xmax'][i])
+        tmp_data[3].append(raw_data['ymin'][i])
+        tmp_data[4].append(raw_data['ymax'][i])
+        tmp_data[5].append(str.encode(str(raw_data['ClassID'][i] + 1)))
+        tmp_data[6].append(raw_data['ClassID'][i] + 1)
 
     prev_file = filename
     i = i + 1
 
-all_data_and_label_info.append(temp_data)
+all_data_and_label_info.append(tmp_data)
+np.random.shuffle(all_data_and_label_info)
 
 i = 0
 for data_and_label_info in all_data_and_label_info:

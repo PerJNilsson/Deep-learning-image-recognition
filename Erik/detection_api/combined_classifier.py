@@ -1,10 +1,10 @@
-# Script to evaluate the output of a trained network on GTSDB
+''' Script that will use Faster R-CNN to find bounding box and an algoritm
+trained on GTSRB for classification'''
 
 import tensorflow as tf
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
 import os, glob
-
+from PIL import Image
 
 
 class GTSDBClassifier(object):
@@ -36,42 +36,31 @@ class GTSDBClassifier(object):
         return boxes, scores, classes, num
 
 
-def paint_box(results):
-    image = Image.open(PATH_TO_DATA + results[1])
-    width, height = image.size
-    fnt = ImageFont.truetype('/Library/Fonts/Arial Bold.ttf', size=12)
-    for i in range(len(results[0])):
-        xy = [results[0][i][0][1]*width, results[0][i][0][0]*height, results[0][i][0][3]*width, results[0][i][0][2]*height]
-        draw = ImageDraw.Draw(image)
-        draw.rectangle(xy, outline='red')
-        draw.text((xy[0], xy[1]), str(int(results[0][i][2]))+ ' ' + ('%.2f' % results[0][i][1]), fill='orange', font=fnt )
-    image.save(PATH_TO_SAVE + results[1])
+
+
+def GTSRBClassifier(bbox, img):
+    # function that will crop image and classify
+    width, height = img.size
+    cropp_tuple = (bbox[0]*width, bbox[1]*height, bbox[2]*width, bbox[3]*height)
+    cropped_img = img.crop(cropp_tuple)
+    cropped_img.save(PATH_TO_SAVE + 'x.png')
+    sign_class = 1
+    return sign_class
+
 
 PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-80000/frozen_inference_graph.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
-PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/test/'
+PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/combined_test/'
 SCORE_THRESHOLD = 0.5
-obj1 = GTSDBClassifier()
-all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
-np.random.shuffle(all_imgs_paths)
 
-all_res = []
-all_imgs = []
+classifier = GTSDBClassifier()
+all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
 
 for path in all_imgs_paths[0:2]:
     img = Image.open(path)
-    res = obj1.get_classification(img)
-    tmp = []
-    for i in range(0, len(res[1][0])):
-        if res[1][0][i] > SCORE_THRESHOLD:
-            tmp.append([res[0][0][i], res[1][0][i], res[2][0][i]])
+    result = classifier.get_classification(img)
 
-        else:
-            break
-    if len(tmp) > 0:
-        head, tail = os.path.split(path)
-        all_res.append([tmp, tail])
+    for i in range(0, len(result[1][0])):
+        if result[1][0][i] > SCORE_THRESHOLD:
 
-
-for res in all_res:
-    paint_box(res)
+            sign_class = GTSRBClassifier(result[0][0][i], img)
