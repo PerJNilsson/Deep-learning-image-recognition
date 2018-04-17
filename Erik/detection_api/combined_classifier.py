@@ -45,23 +45,23 @@ def GTSRBClassifier(bbox, img, filename, iteration):
     crop_tuple = (bbox[1]*width, bbox[0]*height, bbox[3]*width, bbox[2]*height)
     cropped_img = img.crop(crop_tuple)
     root, ext = os.path.splitext(filename)
-    cropped_img.save(PATH_TO_SAVE + root + '-' + str(iteration) + ext)
+    #cropped_img.save(PATH_TO_SAVE + root + '-' + str(iteration) + ext)
     #TODO - Implement classification using GTSRB algorithm
-    sign_class = 1
+    sign_class = 1 # dummy assignment
     return sign_class, crop_tuple
 
 
-PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-80000/frozen_inference_graph.pb'
+PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-150000/frozen_inference_graph.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
 PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/combined_test/'
-SCORE_THRESHOLD = 0.5
+SCORE_THRESHOLD = 0.6
 
 classifier = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
 all_imgs_paths.sort()
 all_res = []
 
-for path in all_imgs_paths[0:10]:
+for path in all_imgs_paths:
     img = Image.open(path)
     result = classifier.get_classification(img)
     for i in range(0, len(result[1][0])):

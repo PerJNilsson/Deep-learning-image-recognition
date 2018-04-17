@@ -50,6 +50,17 @@ IMAGE_FOLDER = 'TestGTSDB/' # change here
 GT_LOCATION = 'TestGTSDB/gt.txt' # here
 OUTPUT_PATH = 'TestGTSDB_all.record' # and here.
 
+classes_int = list(range(1, 44))
+classes_text = ['speed limit 20', 'speed limit 30', 'speed limit 50', 'speed limit 60', 'speed limit 70',
+                    'speed limit 80', 'restriction ends 80', 'speed limit 100', 'speed limit 120', 'no overtaking',
+                    'no overtaking (trucks)', 'priority at next intersection', 'priority road', 'give way', 'stop',
+                    'no traffic both way', 'no trucks', 'no entry', 'danger', 'bend left', 'bend right', 'bend',
+                    'uneven road', 'slippery road', 'road narrows', 'construction', 'traffic signal',
+                    'pedestrian crossing', 'school crossing', 'cycles crossing', 'snow', 'animals', 'restriction ends',
+                    'go right', 'go left', 'go straight', 'go right or straight', 'go left or straight', 'keep right',
+                    'keep left', 'roundabout', 'restriction ends (overtaking)', 'restriction ends (overtaking (trucks))']
+label_map = dict(zip(classes_int, classes_text))
+
 writer = tf.python_io.TFRecordWriter(OUTPUT_PATH)
 
 
@@ -78,13 +89,13 @@ for filename in raw_data['filename']:
             all_data_and_label_info.append(tmp_data)
 
         tmp_data = ([str.encode(filename), [raw_data['xmin'][i] ],[raw_data['xmax'][i]],[raw_data['ymin'][i]],[raw_data['ymax'][i]],
-                   [str.encode(str(raw_data['ClassID'][i] + 1))], [raw_data['ClassID'][i] + 1]])
+                   [str.encode(label_map[(raw_data['ClassID'][i] + 1)])], [raw_data['ClassID'][i] + 1]])
     else:
         tmp_data[1].append(raw_data['xmin'][i])
         tmp_data[2].append(raw_data['xmax'][i])
         tmp_data[3].append(raw_data['ymin'][i])
         tmp_data[4].append(raw_data['ymax'][i])
-        tmp_data[5].append(str.encode(str(raw_data['ClassID'][i] + 1)))
+        tmp_data[5].append(str.encode(label_map[(raw_data['ClassID'][i] + 1)]))
         tmp_data[6].append(raw_data['ClassID'][i] + 1)
 
     prev_file = filename
