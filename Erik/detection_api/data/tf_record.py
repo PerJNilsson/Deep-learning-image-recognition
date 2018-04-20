@@ -46,9 +46,9 @@ def create_tf_entry(label_and_data_info):
     }))
     return tf_label_and_data
 
-IMAGE_FOLDER = 'TestGTSDB/' # change here
-GT_LOCATION = 'TestGTSDB/gt.txt' # here
-OUTPUT_PATH = 'TestGTSDB_all.record' # and here.
+IMAGE_FOLDER = 'TrainGTSDB_ext/' # change here
+GT_LOCATION = 'TrainGTSDB_ext/gt.txt' # here
+OUTPUT_PATH = 'TrainGTSDB_ext.record' # and here.
 
 classes_int = list(range(1, 44))
 classes_text = ['speed limit 20', 'speed limit 30', 'speed limit 50', 'speed limit 60', 'speed limit 70',
