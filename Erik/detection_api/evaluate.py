@@ -49,7 +49,7 @@ def paint_box(results):
 
 PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-80000/frozen_inference_graph.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
-PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/180307_2-80000/'
+PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/test/'
 SCORE_THRESHOLD = 0.5
 obj1 = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
@@ -58,7 +58,7 @@ np.random.shuffle(all_imgs_paths)
 all_res = []
 all_imgs = []
 
-for path in all_imgs_paths[0:20]:
+for path in all_imgs_paths[0:2]:
     img = Image.open(path)
     res = obj1.get_classification(img)
     tmp = []
