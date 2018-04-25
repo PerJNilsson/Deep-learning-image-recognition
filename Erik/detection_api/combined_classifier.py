@@ -71,9 +71,10 @@ def basic_preprocess(img): # TODO - ensure same preprocessing as when training
 
 PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-150000/frozen_inference_graph.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
-PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/combined_test/'
+PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/' \
+               'results/cloud/combined_test/result_0_6.csv'
 H5_LOCATION = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/FinalGTSRB_model.h5'
-SCORE_THRESHOLD = 0.6 # TODO - Determine what threshold is used in the API
+SCORE_THRESHOLD = 0.6
 
 classifier = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
@@ -89,17 +90,18 @@ for path in all_imgs_paths:
             print(result[1][0][i])
             head, filename = os.path.split(path)
             img_to_classify, crop_tuple = prepare_classification(result[0][0][i], img)
-            all_res.append([filename, crop_tuple[0], crop_tuple[1], crop_tuple[2], crop_tuple[3], []])
+            fcnn_class = int(result[2][0][i]) - 1
+            all_res.append([filename, crop_tuple[0], crop_tuple[1], crop_tuple[2], crop_tuple[3],fcnn_class ,[]])
             imgs_to_classify.append(img_to_classify)
 
 imgs_to_classify = np.asarray(imgs_to_classify, dtype='float32')
 pred_classes = GTSRBClassifier(imgs_to_classify)
 
 for i in range(0,len(pred_classes)):
-    all_res[i][5] = pred_classes[i]
+    all_res[i][6] = pred_classes[i]
 
 
-res_file = open(PATH_TO_SAVE + 'result.csv', 'w')
+res_file = open(PATH_TO_SAVE, 'w')
 with res_file:
     writer = csv.writer(res_file, delimiter=';')
     writer.writerows(all_res)

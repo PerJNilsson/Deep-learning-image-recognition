@@ -3,8 +3,6 @@ import numpy as np
 
 def intersection_over_union(pred, gt):
     # Coordinates of intersecting rectangle
-    print(pred)
-    print(gt)
     xA = max(pred[0], gt[0])
     yA = max(pred[1], gt[1])
     xB = min(pred[2], gt[2])
@@ -27,7 +25,7 @@ def removeFromMap(filename, index_to_remove):
         new_sign_list = []
         for i in range(0, len(old_sign_list)):
             if i != index_to_remove:
-                new_sign_list.append(old_sign_list)
+                new_sign_list.append(old_sign_list[i])
         gt_map[file] = new_sign_list
 
 
@@ -64,8 +62,20 @@ for i in range(0, len(result)):
                 positive[sign_class] = positive[sign_class] + 1
                 removeFromMap(file, j)
                 break
-            else:
+            if j == len(gt_signs)-1:
                 false_positive[sign_class] = false_positive[sign_class] + 1
     else:
         false_positive[sign_class] = false_positive[sign_class] + 1
 
+all_pred = false_positive + positive
+sum_AP = 0
+classes_rep = 0
+for i in range(0, len(all_pred)):
+    if all_pred[i] != 0:
+        sum_AP += positive[i]/all_pred[i]
+        classes_rep = classes_rep + 1
+    else:
+        print('Class ' + str(i) + ' not represented.')
+
+mAP = sum_AP/classes_rep
+print(mAP)

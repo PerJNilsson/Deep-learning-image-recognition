@@ -47,9 +47,9 @@ def paint_box(results):
         draw.text((xy[0], xy[1]), str(int(results[0][i][2]))+ ' ' + ('%.2f' % results[0][i][1]), fill='orange', font=fnt )
     image.save(PATH_TO_SAVE + results[1])
 
-PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-80000/frozen_inference_graph.pb'
+PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/ext_set-200000/frozen_inference_graph.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
-PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud/test/'
+PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/results/cloud_ext/'
 SCORE_THRESHOLD = 0.5
 obj1 = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
@@ -63,6 +63,7 @@ for path in all_imgs_paths[0:2]:
     res = obj1.get_classification(img)
     tmp = []
     for i in range(0, len(res[1][0])):
+        print(res[1][0][i])
         if res[1][0][i] > SCORE_THRESHOLD:
             tmp.append([res[0][0][i], res[1][0][i], res[2][0][i]])
 
@@ -73,5 +74,5 @@ for path in all_imgs_paths[0:2]:
         all_res.append([tmp, tail])
 
 
-for res in all_res:
-    paint_box(res)
+'''for res in all_res:
+    paint_box(res)'''
