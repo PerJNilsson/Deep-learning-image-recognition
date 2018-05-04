@@ -4,6 +4,7 @@ from numpy import array
 from numpy import asarray
 from numpy import clip
 import numpy as np
+import keras
 import matplotlib.pyplot as plt
 
 def readData(path, classRange, imSize):
@@ -31,42 +32,32 @@ def readData(path, classRange, imSize):
     return arr, labels, images
 
 
-def readValidationData(path, imSize, num_files):
+def readTestData(path, imSize, num_files,num_classes, img_x, img_y):
 
     images = []
     arr = []
     labels = []
-    i = 1
 
     prefix = path + '\\'
     gtFile = open(prefix + 'GT-final_test.csv')  # annotations file
     gtReader = csv.reader(gtFile, delimiter=';')  # csv parser for annotations file
     next(gtReader)  # skip header
-
+    i=0
     for row in gtReader:
-        if i > num_files:
-            break
-        if i % 1000 == 0:
-            print('Image', i)
+        if(i==num_files):
+            break;
         im = Image.open(prefix + row[0])
         images.append(im.crop((int(row[3]), int(row[4]), int(row[5]), int(row[6]))).resize(imSize))
         labels.append(int(row[7]))  # the 8th column is the label
         arr.append(array(images[-1]))
-        i = i+1
-
+        i+=1
     gtFile.close()
-    return arr, labels , images
-
-def oneHotEncode(l, numClasses):
-
-    onehot_encoded = list()
-    for value in l:
-        vector = [0 for _ in range(numClasses)]
-        if value < numClasses:
-            vector[value] = 1
-        onehot_encoded.append(vector)
-
-    return asarray(onehot_encoded)
+    x_test = np.asarray(arr)
+    y_test = keras.utils.to_categorical(labels, num_classes)
+    x_test = x_test.reshape(x_test.shape[0], img_x, img_y, 3)
+    x_test = x_test.astype('float32')
+    x_test /= 255
+    return x_test, y_test
 
 # Takes array of images with pixel values (0,1)
 def normaliseImage(arr):
