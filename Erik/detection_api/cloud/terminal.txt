@@ -1,4 +1,4 @@
-gcloud ml-engine jobs submit training gtsdb_ext_175000 \
+gcloud ml-engine jobs submit training gtsdb_ext2_250k3 \
 --runtime-version 1.4 \
 --job-dir=gs://bachelor-belgium/train/GTSDB_ext \
 --packages dist/object_detection-0.1.tar.gz,slim/dist/slim-0.1.tar.gz \
@@ -7,7 +7,7 @@ gcloud ml-engine jobs submit training gtsdb_ext_175000 \
 --config /Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/cloud/cloud.yaml \
 -- \
 --train_dir=gs://bachelor-belgium/train/GTSDB_ext2 \
---pipeline_config_path=gs://bachelor-belgium/pipeline_cloud_ext2_175k.config
+--pipeline_config_path=gs://bachelor-belgium/pipeline_cloud_ext2_250k.config
 
 --logtostderr
 --checkpoint_dir=/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/cloud/

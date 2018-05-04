@@ -72,9 +72,9 @@ def basic_preprocess(img): # TODO - ensure same preprocessing as when training
 PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-150000/frozen_inference_graph.pb'
 PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
 PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/' \
-               'results/cloud/combined_test/result_0_6.csv'
+               'results/cloud/combined_test/result_0_9999.csv'# change here
 H5_LOCATION = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/FinalGTSRB_model.h5'
-SCORE_THRESHOLD = 0.6
+SCORE_THRESHOLD = 0.9999 # and here
 
 classifier = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
