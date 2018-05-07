@@ -69,12 +69,14 @@ def basic_preprocess(img): # TODO - ensure same preprocessing as when training
 
     return img
 
-PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/fine_tuned_model/cloud/180307_2-150000/frozen_inference_graph.pb'
-PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/TestGTSDB/'
-PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/data/' \
-               'results/cloud/combined_test/result_0_9999.csv'# change here
-H5_LOCATION = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/models/FinalGTSRB_model.h5'
-SCORE_THRESHOLD = 0.9999 # and here
+PATH_TO_MODEL = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
+                'detection_api/fine_tuned_model/cloud/ext_set-250k/frozen_inference_graph.pb'
+PATH_TO_DATA = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
+               'detection_api/data/TestGTSDB/'
+PATH_TO_SAVE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
+               'detection_api/data/results/cloud_ext/combined_test/result.csv'# change here
+H5_LOCATION = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
+              'detection_api/models/FinalGTSRB_model.h5'
 
 classifier = GTSDBClassifier()
 all_imgs_paths = glob.glob(os.path.join(PATH_TO_DATA, '*.png'))
@@ -82,23 +84,26 @@ all_imgs_paths.sort()
 all_res = []
 imgs_to_classify = []
 
+m = 0
 for path in all_imgs_paths:
     img = Image.open(path)
     result = classifier.get_classification(img)
+    print('Faster R-CNN predicted for img ' + str(m))
     for i in range(0, len(result[1][0])):
-        if result[1][0][i] > SCORE_THRESHOLD:
-            print(result[1][0][i])
-            head, filename = os.path.split(path)
-            img_to_classify, crop_tuple = prepare_classification(result[0][0][i], img)
-            fcnn_class = int(result[2][0][i]) - 1
-            all_res.append([filename, crop_tuple[0], crop_tuple[1], crop_tuple[2], crop_tuple[3],fcnn_class ,[]])
-            imgs_to_classify.append(img_to_classify)
+        head, filename = os.path.split(path)
+        img_to_classify, crop_tuple = prepare_classification(result[0][0][i], img)
+        fcnn_class = int(result[2][0][i]) - 1
+        all_res.append([filename, crop_tuple[0], crop_tuple[1], crop_tuple[2], crop_tuple[3],fcnn_class,
+                        result[1][0][i],[]])
+        imgs_to_classify.append(img_to_classify)
+    m = m +1
+
 
 imgs_to_classify = np.asarray(imgs_to_classify, dtype='float32')
 pred_classes = GTSRBClassifier(imgs_to_classify)
 
 for i in range(0,len(pred_classes)):
-    all_res[i][6] = pred_classes[i]
+    all_res[i][7] = pred_classes[i]
 
 
 res_file = open(PATH_TO_SAVE, 'w')

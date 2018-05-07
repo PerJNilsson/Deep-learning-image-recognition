@@ -1,11 +1,11 @@
 from PIL import Image
 
 img_list = ['/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/'
-            'data/results/cloud/GTSDB-150K-eval-imgs/good imgs/image-14.png',
+            'data/results/cloud/GTSDB-250K-eval-imgs/good-imgs/image-15.png',
             '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/'
-            'data/results/cloud/GTSDB-150K-eval-imgs/good imgs/image-22.png',
+            'data/results/cloud/GTSDB-250K-eval-imgs/good-imgs/image-29.png',
             '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/'
-            'data/results/cloud/GTSDB-150K-eval-imgs/good imgs/image-30.png']
+            'data/results/cloud/GTSDB-250K-eval-imgs/good-imgs/image-52.png']
 
 
 def create_collage(width, height, listofimages):

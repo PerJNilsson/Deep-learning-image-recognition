@@ -67,30 +67,42 @@ def gt_dict(gt):
 
 GT_PATH = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/' \
           'data/TestGTSDB/gt.txt'
-RESULT_PATH = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/detection_api/' \
-              'data/results/cloud/combined_test/result_0_9999.csv'
+RESULT_PATH = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
+               'detection_api/data/results/cloud_ext/combined_test/result.csv'
 
-
-ground_truth = pd.read_csv(GT_PATH, sep = ';', header = None)
-result = pd.read_csv(RESULT_PATH, sep = ';', header = None)
-
-pred_rcnn = [result[0], result[1], result[2], result[3], result[4], result[5]]
-pred_combined = [result[0], result[1], result[2], result[3], result[4], result[6]]
-
-rcnn_true, rcnn_false = correct_pred(pred_rcnn, gt_map=gt_dict(ground_truth))
-combined_true, combined_false = correct_pred(pred_combined, gt_map=gt_dict(ground_truth))
-
+all_thresholds = [0, 0.001, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+                  0.95, 0.99, 0.999, 0.9999]
 number_of_gt_signs = 361 # look in GT-file
 
-precision_rcnn = sum(rcnn_true)/ (sum(rcnn_true) + sum(rcnn_false))
-recall_rcnn = sum(rcnn_true) / number_of_gt_signs
+ground_truth = pd.read_csv(GT_PATH, sep = ';', header = None)
+all_result = pd.read_csv(RESULT_PATH, sep = ';', header = None)
 
-precision_comb = sum(combined_true)/(sum(combined_false) + sum(combined_true))
-recall_comb = sum(combined_true) / number_of_gt_signs
+for threshold in all_thresholds:
+    result = pd.DataFrame(columns=[0, 1, 2, 3, 4, 5, 6])
+    for i in range(0, len(all_result)):
+        if all_result[6][i] > threshold:
+            tmp = pd.DataFrame([[all_result[0][i], all_result[1][i], all_result[2][i], all_result[3][i],
+                           all_result[4][i], all_result[5][i], all_result[7][i]]],
+                               columns=[0, 1, 2, 3, 4, 5, 6])
+            result = result.append(tmp, ignore_index=True)
 
-print('precision_rcnn: ' + str(precision_rcnn))
-print('recall_rcnn: ' + str(recall_rcnn))
-print('precision_comb: ' + str(precision_comb))
-print('recall_comb: ' + str(recall_comb))
+    pred_rcnn = [result[0], result[1], result[2], result[3], result[4], result[5]]
+    pred_combined = [result[0], result[1], result[2], result[3], result[4], result[6]]
 
-print(str(sum(rcnn_true) + sum(rcnn_false)))
+    rcnn_true, rcnn_false = correct_pred(pred_rcnn, gt_map=gt_dict(ground_truth))
+    combined_true, combined_false = correct_pred(pred_combined, gt_map=gt_dict(ground_truth))
+
+
+
+    precision_rcnn = sum(rcnn_true)/ (sum(rcnn_true) + sum(rcnn_false))
+    recall_rcnn = sum(rcnn_true) / number_of_gt_signs
+
+    precision_comb = sum(combined_true)/(sum(combined_false) + sum(combined_true))
+    recall_comb = sum(combined_true) / number_of_gt_signs
+    print('For threshold: ' + str(threshold))
+    print('precision_rcnn: ' + str(precision_rcnn))
+    print('recall_rcnn: ' + str(recall_rcnn))
+    print('precision_comb: ' + str(precision_comb))
+    print('recall_comb: ' + str(recall_comb))
+
+    print(str(sum(rcnn_true) + sum(rcnn_false)))

@@ -2,11 +2,11 @@ import tensorflow as tf
 from PIL import Image
 import io
 
-PATH_TO_EVENT_FILE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/' \
-                     'Erik/detection_api/models/eval180307_2-150000-all/events.out.tfevents.1523964805.' \
+PATH_TO_EVENT_FILE = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
+                     'detection_api/models/eval_ext2_250k/events.out.tfevents.1525598434.' \
                      'Eriks-MacBook-Pro.local'
 PATH_TO_SAVE_DIR = '/Users/erikpersson/PycharmProjects/Deep-learning-image-recognition/Erik/' \
-                   'detection_api/data/results/cloud/GTSDB-150K-eval-imgs/'
+                   'detection_api/data/results/cloud/GTSDB-250K-eval-imgs/'
 imgs_of_interest = set()
 for i in range(0,300):
     tmp_str = 'image-' + str(i)
